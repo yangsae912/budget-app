@@ -5,11 +5,15 @@ import { login } from '../shared/auth';
 export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (login(password)) {
+    setLoading(true);
+    const ok = await login(password);
+    setLoading(false);
+    if (ok) {
       navigate('/', { replace: true });
     } else {
       setError(true);
@@ -41,9 +45,10 @@ export default function LoginPage() {
           )}
           <button
             type="submit"
-            className="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium rounded-xl transition-colors"
+            disabled={loading}
+            className="w-full py-3 bg-blue-500 hover:bg-blue-600 disabled:opacity-60 text-white text-sm font-medium rounded-xl transition-colors"
           >
-            입력
+            {loading ? '확인 중...' : '입력'}
           </button>
         </form>
       </div>

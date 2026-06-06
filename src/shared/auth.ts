@@ -1,12 +1,20 @@
+import axios from 'axios';
+
 const SESSION_KEY = 'budget-auth';
 
-// TODO: 서버 연동 시 이 함수를 API 호출로 교체
-function validatePassword(password: string): boolean {
-  return password === '1234';
+async function validatePassword(password: string): Promise<boolean> {
+  if (import.meta.env.VITE_APP_ENV === 'local') {
+    return password === '1234';
+  }
+  const res = await axios.post(
+    `${import.meta.env.VITE_API_URL}/api/auth/verify-password`,
+    { password }
+  );
+  return res.data.success;
 }
 
-export function login(password: string): boolean {
-  if (!validatePassword(password)) return false;
+export async function login(password: string): Promise<boolean> {
+  if (!await validatePassword(password)) return false;
   sessionStorage.setItem(SESSION_KEY, 'true');
   return true;
 }
